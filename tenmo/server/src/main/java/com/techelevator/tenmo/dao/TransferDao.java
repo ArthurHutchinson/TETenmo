@@ -5,7 +5,6 @@ import com.techelevator.tenmo.model.Transfer;
 
 public interface TransferDao {
 
-    Transfer addTransfer(Account account);
-
+    Transfer createTransfer(Transfer transfer);
 
 }

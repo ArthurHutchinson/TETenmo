@@ -90,5 +90,5 @@ public class Transfer {
                 ", transfer_amount=" + transfer_amount +
                 '}';
     }
-    
+
 }
