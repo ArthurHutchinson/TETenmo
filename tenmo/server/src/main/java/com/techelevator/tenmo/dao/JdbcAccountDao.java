@@ -26,12 +26,10 @@ public class JdbcAccountDao implements AccountDao {
     public Account createAccount(Account newAccount) {
         String sql = "INSERT INTO account(user_id, balance)\n" +
                 "VALUES(?, ?) RETURNING account_id;";
-        Integer newId = jdbcTemplate.queryForObject(sql, Integer.class, newAccount.getUserId(), 1000.57);
+        Integer newId = jdbcTemplate.queryForObject(sql, Integer.class, newAccount.getUserId(), 1000.00);
         newAccount.setAccountId(newId);
         return newAccount;
     }
-
-
 
     @Override
     public BigDecimal getBalance(int accountId) {
@@ -47,7 +45,6 @@ public class JdbcAccountDao implements AccountDao {
             return null;
         }return null;
     }
-
 
     private Account mapRowToAccount(SqlRowSet result) {
         Account account = new Account();
