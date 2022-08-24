@@ -4,16 +4,18 @@ import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.LoginDTO;
 import com.techelevator.tenmo.model.User;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class JdbcAccountDao implements AccountDao {
 
     private final JdbcTemplate jdbcTemplate;
-    User user;
-    LoginDTO loginDTO;
+//    public static List<Account> accounts = new ArrayList<>();
 
     public JdbcAccountDao (DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -27,6 +29,27 @@ public class JdbcAccountDao implements AccountDao {
         newAccount.setAccountId(newId);
         return newAccount;
     }
+
+    @Override
+    public Account getBalance(int accountId) {
+        Account account = null;
+        String sql = "SELECT balance FROM account WHERE account_id = ?;";
+        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, accountId);
+        if (result.next()) {
+            account = mapRowToAccount(result);
+        }
+        return account;
+    }
+
+    private Account mapRowToAccount(SqlRowSet result) {
+        Account account = new Account();
+        account.setAccountId(result.getInt("account_id"));
+        account.setUserId(result.getInt("user_id"));
+        account.setBalance(result.getBigDecimal("balance"));
+        return account;
+    }
+
+
 
 
 
