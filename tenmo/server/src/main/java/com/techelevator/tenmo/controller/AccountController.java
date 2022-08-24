@@ -8,6 +8,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.security.Principal;
 
 @RestController
@@ -36,7 +37,7 @@ public class AccountController {
     }
 
     @RequestMapping(value = "/account/{accountId}", method = RequestMethod.GET)
-    public Account getBalance (@PathVariable int accountId) {
+    public BigDecimal getBalance (@PathVariable Integer accountId) {
         return accountDao.getBalance(accountId);
     }
 
