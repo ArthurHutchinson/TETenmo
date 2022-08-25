@@ -24,11 +24,11 @@ public class JdbcTransferDao implements TransferDao{
 //        Account account = null;
 //        Account account2 = null;
         String sql = "INSERT INTO transfer (from_user_id, from_account_id, to_user_id, to_account_id, transfer_amount)\n" +
-                "VALUES (?,?,?,?,?) RETURNING transfer_id;";
+                "VALUES ((SELECT user_id FROM tenmo_user WHERE user_id = ?),?,?,?,?) RETURNING transfer_id;";
         Integer newId = jdbcTemplate.queryForObject(sql, Integer.class,
-                newTransfer.getFromUserId(), newTransfer.getFromAccountId(),
+                newTransfer.getFromUserId() , newTransfer.getFromAccountId(),
                 newTransfer.getToUserId(), newTransfer.getToAccountId(),
-                newTransfer.getTransfer_amount());
+                newTransfer.getTransferAmount());
         newTransfer.setTransferId(newId);
         return newTransfer;
     }

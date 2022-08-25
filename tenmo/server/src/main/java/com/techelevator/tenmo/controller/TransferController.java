@@ -28,7 +28,7 @@ public class TransferController {
     @RequestMapping(value = "/transfer", method = RequestMethod.POST)
     public Transfer createTransfer(@RequestBody Transfer newTransfer) {
 //        try {
-        newTransfer = new Transfer();
+//       newTransfer = new Transfer();
             transferDao.createTransfer(newTransfer);
 //        } catch (DataAccessException e) {
 //            return false;

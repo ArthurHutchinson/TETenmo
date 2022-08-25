@@ -9,26 +9,26 @@ public class Transfer {
     private int fromAccountId;
     private int toUserId;
     private int toAccountId;
-    private BigDecimal transfer_amount = new BigDecimal("0.00");
+    private BigDecimal transferAmount = new BigDecimal("0.00");
 
     public Transfer() {
     }
 
-    public Transfer(int fromUserId, int fromAccountId, int toUserId, int toAccountId, BigDecimal transfer_amount) {
+    public Transfer(int fromUserId, int fromAccountId, int toUserId, int toAccountId, BigDecimal transferAmount) {
         this.fromUserId = fromUserId;
         this.fromAccountId = fromAccountId;
         this.toUserId = toUserId;
         this.toAccountId = toAccountId;
-        this.transfer_amount = transfer_amount;
+        this.transferAmount = transferAmount;
     }
 
-    public Transfer(int transferId, int fromUserId, int fromAccountId, int toUserId, int toAccountId, BigDecimal transfer_amount) {
+    public Transfer(int transferId, int fromUserId, int fromAccountId, int toUserId, int toAccountId, BigDecimal transferAmount) {
         this.transferId = transferId;
         this.fromUserId = fromUserId;
         this.fromAccountId = fromAccountId;
         this.toUserId = toUserId;
         this.toAccountId = toAccountId;
-        this.transfer_amount = transfer_amount;
+        this.transferAmount = transferAmount;
     }
 
     public int getTransferId() {
@@ -71,12 +71,12 @@ public class Transfer {
         this.toAccountId = toAccountId;
     }
 
-    public BigDecimal getTransfer_amount() {
-        return transfer_amount;
+    public BigDecimal getTransferAmount() {
+        return transferAmount;
     }
 
-    public void setTransfer_amount(BigDecimal transfer_amount) {
-        this.transfer_amount = transfer_amount;
+    public void setTransferAmount(BigDecimal transferAmount) {
+        this.transferAmount = transferAmount;
     }
 
     @Override
@@ -87,7 +87,7 @@ public class Transfer {
                 ", fromAccountId=" + fromAccountId +
                 ", toUserId=" + toUserId +
                 ", toAccountId=" + toAccountId +
-                ", transfer_amount=" + transfer_amount +
+                ", transferAmount=" + transferAmount +
                 '}';
     }
 
