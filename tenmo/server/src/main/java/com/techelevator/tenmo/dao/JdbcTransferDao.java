@@ -31,6 +31,9 @@ public class JdbcTransferDao implements TransferDao{
         if(newTransfer.getFromAccountId() == newTransfer.getToAccountId()) {
             return null;
         }
+        // TODO: Make sure an account does no go into negative when transferring balances.
+        // TODO: Make sure users are not able to to send a zero/negative amount.
+        // TODO: Sending transfer has an initial status of "Approved".
 
         // This creates a new insert into the transfer table in SQL
         Integer newId = jdbcTemplate.queryForObject(sql, Integer.class,
@@ -59,6 +62,8 @@ public class JdbcTransferDao implements TransferDao{
         }
         return transfers;
     }
+
+    // TODO: Need a GET of a Transaction ID
 
     private Transfer mapRowToTransfer (SqlRowSet result) {
         Transfer transfer = new Transfer();
