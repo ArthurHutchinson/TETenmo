@@ -9,6 +9,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
 
@@ -28,21 +29,19 @@ public class TransferController {
     }
 
 
-    // TODO: This is currently passing the User's ID through the URL. We need to fix this.
-    @RequestMapping(value = "/transfer/{userId}", method = RequestMethod.GET)
-    public List<Transfer> findTransfersByUserId(@PathVariable int userId) {
+    // this currently takes userId in the body. Would it be better to take it as a param?
+    @RequestMapping(value = "/transfer", method = RequestMethod.GET)
+    public List<Transfer> findTransfersByUserId(@RequestBody int userId) {
         return transferDao.findTransfersByUserId(userId);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(value = "/transfer", method = RequestMethod.POST)
     public boolean createTransfer(@RequestBody Transfer newTransfer) {
-        try {
-            transferDao.createTransfer(newTransfer);
-        } catch (DataAccessException e) {
-            return false;
-        }
-        return true;
+
+              if(transferDao.createTransfer(newTransfer) == null){
+                  return false;
+              }return true;
     }
 
 }

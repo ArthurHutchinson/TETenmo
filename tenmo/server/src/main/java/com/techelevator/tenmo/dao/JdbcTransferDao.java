@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,16 +24,18 @@ public class JdbcTransferDao implements TransferDao{
     @Override
     public Transfer createTransfer(Transfer newTransfer) {
 
-        String sql = "INSERT INTO transfer (from_user_id, from_account_id, to_user_id, to_account_id, transfer_amount)\n" +
+        String sql = "INSERT INTO transfer \n" +
+        "(from_user_id, from_account_id, to_user_id, to_account_id, transfer_amount)\n" +
                 "VALUES ((SELECT user_id FROM tenmo_user WHERE user_id = ?),?,?,?,?) RETURNING transfer_id;";
         String sqlFrom = "UPDATE account SET balance = balance - ? WHERE account_id = ?;";
         String sqlTo = "UPDATE account SET balance = balance + ? WHERE account_id = ?;";
-
-        if(newTransfer.getFromAccountId() == newTransfer.getToAccountId()) {
-            return null;
+        String sqlBalance = "SELECT balance FROM account WHERE account_id = ?;";
+        Integer balance = jdbcTemplate.queryForObject(sqlBalance, Integer.class, newTransfer.getFromAccountId());
+        BigDecimal bigBalance = new BigDecimal(balance);
+        BigDecimal zero = new BigDecimal("0.0");
+        if(newTransfer.getFromAccountId() == newTransfer.getToAccountId() || bigBalance.compareTo(newTransfer.getTransferAmount())  == -1 || (newTransfer.getFromUserId() == newTransfer.getToUserId() || newTransfer.getTransferAmount().compareTo(zero) == 0)) {
+          return null  ;
         }
-        // TODO: Make sure an account does no go into negative when transferring balances.
-        // TODO: Make sure users are not able to to send a zero/negative amount.
         // TODO: Sending transfer has an initial status of "Approved".
 
         // This creates a new insert into the transfer table in SQL
