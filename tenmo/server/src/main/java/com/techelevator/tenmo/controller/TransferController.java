@@ -3,14 +3,10 @@ package com.techelevator.tenmo.controller;
 import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.dao.UserDao;
-import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.security.Principal;
 import java.util.List;
 
 //TODO: Add Authentication and Authorization Tags
@@ -29,10 +25,14 @@ public class TransferController {
     }
 
 
-    // this currently takes userId in the body. Would it be better to take it as a param?
-    @RequestMapping(value = "/transfer", method = RequestMethod.GET)
+    @RequestMapping(value = "/transfer/userid", method = RequestMethod.GET)
     public List<Transfer> findTransfersByUserId(@RequestBody int userId) {
-        return transferDao.findTransfersByUserId(userId);
+        return transferDao.getTransfersByUserId(userId);
+    }
+
+    @RequestMapping(value = "/transfer/transferid", method = RequestMethod.GET)
+    public List<Transfer> getTransferById(@RequestBody int transferId) {
+        return transferDao.getTransferByTransferId(transferId);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
