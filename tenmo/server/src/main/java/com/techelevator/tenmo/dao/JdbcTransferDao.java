@@ -33,7 +33,10 @@ public class JdbcTransferDao implements TransferDao{
         Integer balance = jdbcTemplate.queryForObject(sqlBalance, Integer.class, newTransfer.getFromAccountId());
         BigDecimal bigBalance = new BigDecimal(balance);
         BigDecimal zero = new BigDecimal("0.0");
-        if(newTransfer.getFromAccountId() == newTransfer.getToAccountId() || bigBalance.compareTo(newTransfer.getTransferAmount())  == -1 || (newTransfer.getFromUserId() == newTransfer.getToUserId() || newTransfer.getTransferAmount().compareTo(zero) == 0)) {
+        if(newTransfer.getFromAccountId() == newTransfer.getToAccountId()
+                || bigBalance.compareTo(newTransfer.getTransferAmount())  == -1
+                || (newTransfer.getFromUserId() == newTransfer.getToUserId()
+                || newTransfer.getTransferAmount().compareTo(zero) == 0)) {
           return null  ;
         }
         // TODO: Sending transfer has an initial status of "Approved".
