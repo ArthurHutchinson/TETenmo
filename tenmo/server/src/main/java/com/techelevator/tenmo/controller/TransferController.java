@@ -26,15 +26,13 @@ public class TransferController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(value = "/transfer", method = RequestMethod.POST)
-    public Transfer createTransfer(@RequestBody Transfer newTransfer) {
-//        try {
-//       newTransfer = new Transfer();
+    public boolean createTransfer(@RequestBody Transfer newTransfer) {
+        try {
             transferDao.createTransfer(newTransfer);
-//        } catch (DataAccessException e) {
-//            return false;
-//        }
-//        return true;
-        return newTransfer;
+        } catch (DataAccessException e) {
+            return false;
+        }
+        return true;
     }
 
 }
