@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 public class TransferController {
@@ -22,6 +23,11 @@ public class TransferController {
         this.transferDao = transferDao;
         this.userDao = userDao;
         this.accountDao = accountDao;
+    }
+
+    @RequestMapping(value = "/transfer/{userId}", method = RequestMethod.GET)
+    public List<Transfer> findTransfersByUserId(@PathVariable int userId) {
+        return transferDao.findTransfersByUserId(userId);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
