@@ -45,7 +45,10 @@ public class TransferController {
         //then set newTransfer to_account and from_account
               if(transferDao.createTransfer(newTransfer) == null){
                   return false;
-              }return true;
+
+              }
+        transferDao.setStatusToApproved(newTransfer);
+              return true;
     }
 
 }

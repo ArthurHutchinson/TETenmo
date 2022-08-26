@@ -8,6 +8,8 @@ public interface TransferDao {
 
     Transfer createTransfer(Transfer transfer);
 
+    Transfer setStatusToApproved(Transfer pendingTransfer);
+
     List<Transfer> getTransfersByUserId(int userId);
 
     List<Transfer> getTransferByTransferId(int transferId, int userId);
