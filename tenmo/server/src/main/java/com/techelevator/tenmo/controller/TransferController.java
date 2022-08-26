@@ -27,13 +27,14 @@ public class TransferController {
         this.accountDao = accountDao;
     }
 
-
+    // TODO: TEST THIS
     @RequestMapping(value = "/transfer", method = RequestMethod.GET)
     public List<Transfer> findTransfersByUserId(Principal principal) {
         return transferDao.getTransfersByUserId(userDao.findIdByUsername(principal.getName()));
 
     }
 
+    // TODO: TEST THIS
     @RequestMapping(value = "/transfer/{transferId}", method = RequestMethod.GET)
     public List<Transfer> getTransferById(@PathVariable int transferId, Principal principal) {
         return transferDao.getTransferByTransferId(transferId, userDao.findIdByUsername(principal.getName()));

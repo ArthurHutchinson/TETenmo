@@ -59,15 +59,21 @@ public class JdbcTransferDao implements TransferDao{
 //        return newTransfer;
 //    }
 
+
+    // TODO: TEST THIS
     @Override
     public Transfer createTransfer(Transfer newTransfer) {
 
-        String sql = "INSERT INTO transfer \n" +
-        "(from_account_id, to_account_id, transfer_amount)\n" +
-                "VALUES ((SELECT account_id FROM account WHERE user_id = (SELECT user_id FROM tenmo_user WHERE tenmo_user = ?)),?,?,?,?) RETURNING transfer_id;";
+        String sql = "INSERT INTO transfer\n" +
+                "(from_account_id, to_account_id, transfer_amount)\n" +
+                "VALUES (?,?,?)\n" +
+                "RETURNING transfer_id;";
         String sqlFrom = "UPDATE account SET balance = balance - ? WHERE account_id = ?;";
         String sqlTo = "UPDATE account SET balance = balance + ? WHERE account_id = ?;";
         String sqlBalance = "SELECT balance FROM account WHERE account_id = ?;";
+
+        // Prevent transferring from same account, transferring funds to where account is negative
+        // TODO: User is able to 'steal' money from another account by adding a negative number.
         Integer balance = jdbcTemplate.queryForObject(sqlBalance, Integer.class, newTransfer.getFromAccountId());
         BigDecimal bigBalance = new BigDecimal(balance);
         BigDecimal zero = new BigDecimal("0.0");
@@ -76,6 +82,7 @@ public class JdbcTransferDao implements TransferDao{
                 || newTransfer.getTransferAmount().compareTo(zero) == 0) {
           return null  ;
         }
+
         // TODO: Sending transfer has an initial status of "Approved".
 
         // This creates a new insert into the transfer table in SQL
@@ -92,12 +99,15 @@ public class JdbcTransferDao implements TransferDao{
         return newTransfer;
     }
 
+
+    // TODO: TEST THIS
     @Override
     public List<Transfer> getTransfersByUserId(int userId) {
         List<Transfer> transfers = new ArrayList<>();
         String sql = "SELECT transfer_id, from_account_id, to_account_id, transfer_amount\n" +
-                "FROM transfer\n" +
-                "WHERE from_user_id = ?;";
+                "FROM transfer AS t\n" +
+                "JOIN account AS a ON a.account_id = t.from_account_id OR a.account_id = t.to_account_id\n" +
+                "WHERE a.user_id = ?;";
         SqlRowSet result = jdbcTemplate.queryForRowSet(sql, userId);
         while(result.next()) {
             Transfer transfer = mapRowToTransfer(result);
@@ -106,13 +116,16 @@ public class JdbcTransferDao implements TransferDao{
         return transfers;
     }
 
+
+    // TODO: TEST THIS
     @Override
     public List<Transfer> getTransferByTransferId(int transferId, int userId) {
         List<Transfer> transfers = new ArrayList<>();
-        String sql = "SELECT transfer_id, from_user_id, from_account_id, to_user_id, to_account_id, transfer_amount\n" +
-                "FROM transfer\n" +
-                "WHERE transfer_id = ? AND (from_user_id = ? OR to_user_id = ?);";
-        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, transferId, userId, userId);
+        String sql = "SELECT transfer_id, from_account_id, to_account_id, transfer_amount\n" +
+                "FROM transfer AS t\n" +
+                "JOIN account AS a ON a.account_id = t.from_account_id OR a.account_id = t.to_account_id\n" +
+                "WHERE transfer_id = ? AND (a.user_id = ?);";
+        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, transferId, userId);
         while(result.next()) {
             Transfer transfer = mapRowToTransfer(result);
             transfers.add(transfer);
@@ -120,14 +133,10 @@ public class JdbcTransferDao implements TransferDao{
         return transfers;
     }
 
-    // TODO: Need a GET of a Transaction ID
-
     private Transfer mapRowToTransfer (SqlRowSet result) {
         Transfer transfer = new Transfer();
         transfer.setTransferId(result.getInt("transfer_id"));
-        transfer.setFromUserId(result.getInt("from_user_id"));
         transfer.setFromAccountId(result.getInt("from_account_id"));
-        transfer.setToUserId(result.getInt("to_user_id"));
         transfer.setToAccountId(result.getInt("to_account_id"));
         transfer.setTransferAmount(result.getBigDecimal("transfer_amount"));
         return transfer;
