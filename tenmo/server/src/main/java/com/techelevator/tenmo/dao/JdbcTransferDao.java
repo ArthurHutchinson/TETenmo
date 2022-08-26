@@ -65,22 +65,28 @@ public class JdbcTransferDao implements TransferDao{
                 "(from_account_id, to_account_id, transfer_amount)\n" +
                 "VALUES (?,?,?)\n" +
                 "RETURNING transfer_id;";
+
         String sqlFrom = "UPDATE account SET balance = balance - ? WHERE account_id = ?;";
         String sqlTo = "UPDATE account SET balance = balance + ? WHERE account_id = ?;";
+
         String sqlBalance = "SELECT balance FROM account WHERE account_id = ?;";
 
-        // Prevent transferring from same account, transferring funds to where account is negative
-        // TODO: User is able to 'steal' money from another account by adding a negative number.
+        String sqlFromUser = "SELECT user_id FROM account WHERE from_account_id = ?";
+        String sqlToUser = "SELECT user_id FROM account WHERE to_account_id = ?";
+
+        // Prevent transferring from same account, transferring funds beyond account balance.
+        String fromUser = jdbcTemplate.queryForObject(sqlFromUser, String.class, newTransfer.getFromAccountId());
+        String toUser = jdbcTemplate.queryForObject(sqlToUser, String.class, newTransfer.getToAccountId());
         Integer balance = jdbcTemplate.queryForObject(sqlBalance, Integer.class, newTransfer.getFromAccountId());
         BigDecimal bigBalance = new BigDecimal(balance);
         BigDecimal zero = new BigDecimal("0.0");
+
         if(newTransfer.getFromAccountId() == newTransfer.getToAccountId()
+                || fromUser.equals(toUser)
                 || bigBalance.compareTo(newTransfer.getTransferAmount()) <= 0
                 || newTransfer.getTransferAmount().compareTo(zero) == 0) {
           return null;
         }
-
-        // TODO: Sending transfer has an initial status of "Approved".
 
         // This creates a new insert into the transfer table in SQL
         Integer newId = jdbcTemplate.queryForObject(sql, Integer.class,
