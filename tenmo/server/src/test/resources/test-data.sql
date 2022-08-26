@@ -58,4 +58,9 @@ CREATE SEQUENCE seq_transfer_id
  INSERT INTO account (user_id, balance)
  VALUES ((SELECT user_id FROM tenmo_user WHERE username = 'TestUser2'), 2000);
 
+ INSERT INTO transfer (from_account_id, to_account_id, transfer_amount)
+ VALUES ((SELECT a.account_id FROM account AS a JOIN tenmo_user AS u ON u.user_id = a.user_id WHERE u.username = 'TestUser1' AND a.account_id = 2001),
+ (SELECT a.account_id FROM account AS a JOIN tenmo_user AS u ON u.user_id = a.user_id WHERE u.username = 'TestUser2' AND a.account_id = 2002),
+ 50);
+
 COMMIT;
