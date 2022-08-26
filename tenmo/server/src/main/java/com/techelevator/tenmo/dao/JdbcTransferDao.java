@@ -71,12 +71,14 @@ public class JdbcTransferDao implements TransferDao{
 
         String sqlBalance = "SELECT balance FROM account WHERE account_id = ?;";
 
+
         String sqlFromUser = "SELECT user_id FROM account WHERE from_account_id = ?";
         String sqlToUser = "SELECT user_id FROM account WHERE to_account_id = ?";
 
         // Prevent transferring from same account, transferring funds beyond account balance.
         String fromUser = jdbcTemplate.queryForObject(sqlFromUser, String.class, newTransfer.getFromAccountId());
         String toUser = jdbcTemplate.queryForObject(sqlToUser, String.class, newTransfer.getToAccountId());
+
         Integer balance = jdbcTemplate.queryForObject(sqlBalance, Integer.class, newTransfer.getFromAccountId());
         BigDecimal bigBalance = new BigDecimal(balance);
         BigDecimal zero = new BigDecimal("0.0");
@@ -111,7 +113,6 @@ public class JdbcTransferDao implements TransferDao{
     }
 
 
-    // TODO: TEST THIS
     @Override
     public List<Transfer> getTransfersByUserId(int userId) {
         List<Transfer> transfers = new ArrayList<>();
@@ -128,7 +129,6 @@ public class JdbcTransferDao implements TransferDao{
     }
 
 
-    // TODO: TEST THIS
     @Override
     public List<Transfer> getTransferByTransferId(int transferId, int userId) {
         List<Transfer> transfers = new ArrayList<>();
