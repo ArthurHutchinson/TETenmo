@@ -73,13 +73,12 @@ public class JdbcTransferDao implements TransferDao{
         String sqlBalance = "SELECT balance FROM account WHERE account_id = ?;";
 
         // Prevent transferring from same account, transferring funds to where account is negative
-        // TODO: User is able to 'steal' money from another account by adding a negative number.
         Integer balance = jdbcTemplate.queryForObject(sqlBalance, Integer.class, newTransfer.getFromAccountId());
         BigDecimal bigBalance = new BigDecimal(balance);
         BigDecimal zero = new BigDecimal("0.0");
         if(newTransfer.getFromAccountId() == newTransfer.getToAccountId()
                 || bigBalance.compareTo(newTransfer.getTransferAmount()) <= 0
-                || newTransfer.getTransferAmount().compareTo(zero) == 0) {
+                || newTransfer.getTransferAmount().compareTo(zero) <= 0) {
           return null  ;
         }
 
@@ -100,7 +99,6 @@ public class JdbcTransferDao implements TransferDao{
     }
 
 
-    // TODO: TEST THIS
     @Override
     public List<Transfer> getTransfersByUserId(int userId) {
         List<Transfer> transfers = new ArrayList<>();
@@ -117,7 +115,6 @@ public class JdbcTransferDao implements TransferDao{
     }
 
 
-    // TODO: TEST THIS
     @Override
     public List<Transfer> getTransferByTransferId(int transferId, int userId) {
         List<Transfer> transfers = new ArrayList<>();
