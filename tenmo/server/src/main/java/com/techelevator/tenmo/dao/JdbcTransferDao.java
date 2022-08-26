@@ -84,7 +84,7 @@ public class JdbcTransferDao implements TransferDao{
         if(newTransfer.getFromAccountId() == newTransfer.getToAccountId()
                 || fromUser.equals(toUser)
                 || bigBalance.compareTo(newTransfer.getTransferAmount()) <= 0
-                || newTransfer.getTransferAmount().compareTo(zero) == 0) {
+                || newTransfer.getTransferAmount().compareTo(zero) <= 0) {
           return null;
         }
 
