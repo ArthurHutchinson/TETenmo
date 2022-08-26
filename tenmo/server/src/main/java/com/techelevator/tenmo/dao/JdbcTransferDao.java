@@ -95,7 +95,7 @@ public class JdbcTransferDao implements TransferDao{
     @Override
     public List<Transfer> getTransfersByUserId(int userId) {
         List<Transfer> transfers = new ArrayList<>();
-        String sql = "SELECT transfer_id, from_user_id, from_account_id, to_user_id, to_account_id, transfer_amount\n" +
+        String sql = "SELECT transfer_id, from_account_id, to_account_id, transfer_amount\n" +
                 "FROM transfer\n" +
                 "WHERE from_user_id = ?;";
         SqlRowSet result = jdbcTemplate.queryForRowSet(sql, userId);

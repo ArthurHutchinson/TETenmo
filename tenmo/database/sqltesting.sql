@@ -14,5 +14,9 @@ SELECT transfer_id, from_user_id, from_account_id, to_user_id, to_account_id, tr
 FROM transfer
 WHERE from_user_id = 1001;
 
+SELECT transfer_id, from_user_id, from_account_id, to_user_id, to_account_id, transfer_amount
+FROM transfer
+WHERE transfer_id = 3001;
+
 
 
