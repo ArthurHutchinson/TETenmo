@@ -38,11 +38,13 @@ public class TransferController {
         return transferDao.getTransferByTransferId(transferId, userDao.findIdByUsername(principal.getName()));
     }
 
+
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(value = "/transfer", method = RequestMethod.POST)
-    public boolean sendTransfer(@RequestBody Transfer newTransfer) {
+    public boolean sendTransfer(@RequestBody Transfer newTransfer, Principal principal) {
 // use accountDao to find out (from/to)_account_id for given username
         //then set newTransfer to_account and from_account
+        String toUserName = newTransfer.getToUsername();
               if(transferDao.createTransfer(newTransfer) == null){
                   return false;
 
