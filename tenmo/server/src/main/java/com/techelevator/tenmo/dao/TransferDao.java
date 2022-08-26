@@ -10,6 +10,6 @@ public interface TransferDao {
 
     List<Transfer> getTransfersByUserId(int userId);
 
-    List<Transfer> getTransferByTransferId(int transferId);
+    List<Transfer> getTransferByTransferId(int transferId, int userId);
 
 }

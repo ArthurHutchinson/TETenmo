@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,12 +22,49 @@ public class JdbcTransferDao implements TransferDao{
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+
+    // This is the original method
+    //need transferController post method to set newTransfer to_account_id & from_account_id
+//    @Override
+//    public Transfer createTransfer(Transfer newTransfer) {
+//
+//        String sql = "INSERT INTO transfer \n" +
+//        "(from_user_id, from_account_id, to_user_id, to_account_id, transfer_amount)\n" +
+//                "VALUES ((SELECT user_id FROM tenmo_user WHERE user_id = ?),?,?,?,?) RETURNING transfer_id;";
+//        String sqlFrom = "UPDATE account SET balance = balance - ? WHERE account_id = ?;";
+//        String sqlTo = "UPDATE account SET balance = balance + ? WHERE account_id = ?;";
+//        String sqlBalance = "SELECT balance FROM account WHERE account_id = ?;";
+//        Integer balance = jdbcTemplate.queryForObject(sqlBalance, Integer.class, newTransfer.getFromAccountId());
+//        BigDecimal bigBalance = new BigDecimal(balance);
+//        BigDecimal zero = new BigDecimal("0.0");
+//        if(newTransfer.getFromAccountId() == newTransfer.getToAccountId()
+//                || bigBalance.compareTo(newTransfer.getTransferAmount())  == -1
+//                || (newTransfer.getFromUserId() == newTransfer.getToUserId()
+//                || newTransfer.getTransferAmount().compareTo(zero) == 0)) {
+//          return null  ;
+//        }
+//        // TODO: Sending transfer has an initial status of "Approved".
+//
+//        // This creates a new insert into the transfer table in SQL
+//        Integer newId = jdbcTemplate.queryForObject(sql, Integer.class,
+//                newTransfer.getFromUserId() , newTransfer.getFromAccountId(),
+//                newTransfer.getToUserId(), newTransfer.getToAccountId(),
+//                newTransfer.getTransferAmount());
+//        newTransfer.setTransferId(newId);
+//
+//        // This updates the account balance.
+//        jdbcTemplate.update(sqlFrom,newTransfer.getTransferAmount(),newTransfer.getFromAccountId());
+//        jdbcTemplate.update(sqlTo,newTransfer.getTransferAmount(),newTransfer.getToAccountId());
+//
+//        return newTransfer;
+//    }
+
     @Override
     public Transfer createTransfer(Transfer newTransfer) {
 
         String sql = "INSERT INTO transfer \n" +
-        "(from_user_id, from_account_id, to_user_id, to_account_id, transfer_amount)\n" +
-                "VALUES ((SELECT user_id FROM tenmo_user WHERE user_id = ?),?,?,?,?) RETURNING transfer_id;";
+        "(from_account_id, to_account_id, transfer_amount)\n" +
+                "VALUES ((SELECT account_id FROM account WHERE user_id = (SELECT user_id FROM tenmo_user WHERE tenmo_user = ?)),?,?,?,?) RETURNING transfer_id;";
         String sqlFrom = "UPDATE account SET balance = balance - ? WHERE account_id = ?;";
         String sqlTo = "UPDATE account SET balance = balance + ? WHERE account_id = ?;";
         String sqlBalance = "SELECT balance FROM account WHERE account_id = ?;";
@@ -34,17 +72,16 @@ public class JdbcTransferDao implements TransferDao{
         BigDecimal bigBalance = new BigDecimal(balance);
         BigDecimal zero = new BigDecimal("0.0");
         if(newTransfer.getFromAccountId() == newTransfer.getToAccountId()
-                || bigBalance.compareTo(newTransfer.getTransferAmount())  == -1
-                || (newTransfer.getFromUserId() == newTransfer.getToUserId()
-                || newTransfer.getTransferAmount().compareTo(zero) == 0)) {
+                || bigBalance.compareTo(newTransfer.getTransferAmount()) <= 0
+                || newTransfer.getTransferAmount().compareTo(zero) == 0) {
           return null  ;
         }
         // TODO: Sending transfer has an initial status of "Approved".
 
         // This creates a new insert into the transfer table in SQL
         Integer newId = jdbcTemplate.queryForObject(sql, Integer.class,
-                newTransfer.getFromUserId() , newTransfer.getFromAccountId(),
-                newTransfer.getToUserId(), newTransfer.getToAccountId(),
+                newTransfer.getFromAccountId(),
+                newTransfer.getToAccountId(),
                 newTransfer.getTransferAmount());
         newTransfer.setTransferId(newId);
 
@@ -70,12 +107,12 @@ public class JdbcTransferDao implements TransferDao{
     }
 
     @Override
-    public List<Transfer> getTransferByTransferId(int transferId) {
+    public List<Transfer> getTransferByTransferId(int transferId, int userId) {
         List<Transfer> transfers = new ArrayList<>();
         String sql = "SELECT transfer_id, from_user_id, from_account_id, to_user_id, to_account_id, transfer_amount\n" +
                 "FROM transfer\n" +
-                "WHERE transfer_id = ?;";
-        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, transferId);
+                "WHERE transfer_id = ? AND (from_user_id = ? OR to_user_id = ?);";
+        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, transferId, userId, userId);
         while(result.next()) {
             Transfer transfer = mapRowToTransfer(result);
             transfers.add(transfer);

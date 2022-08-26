@@ -5,12 +5,15 @@ import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 //TODO: Add Authentication and Authorization Tags
 
+@PreAuthorize("isAuthenticated()")
 @RestController
 public class TransferController {
 
@@ -25,20 +28,22 @@ public class TransferController {
     }
 
 
-    @RequestMapping(value = "/transfer/userid", method = RequestMethod.GET)
-    public List<Transfer> findTransfersByUserId(@RequestBody int userId) {
-        return transferDao.getTransfersByUserId(userId);
+    @RequestMapping(value = "/transfer", method = RequestMethod.GET)
+    public List<Transfer> findTransfersByUserId(Principal principal) {
+        return transferDao.getTransfersByUserId(userDao.findIdByUsername(principal.getName()));
+
     }
 
-    @RequestMapping(value = "/transfer/transferid", method = RequestMethod.GET)
-    public List<Transfer> getTransferById(@RequestBody int transferId) {
-        return transferDao.getTransferByTransferId(transferId);
+    @RequestMapping(value = "/transfer/{transferId}", method = RequestMethod.GET)
+    public List<Transfer> getTransferById(@PathVariable int transferId, Principal principal) {
+        return transferDao.getTransferByTransferId(transferId, userDao.findIdByUsername(principal.getName()));
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(value = "/transfer", method = RequestMethod.POST)
     public boolean createTransfer(@RequestBody Transfer newTransfer) {
-
+// use accountDao to find out (from/to)_account_id for given username
+        //then set newTransfer to_account and from_account
               if(transferDao.createTransfer(newTransfer) == null){
                   return false;
               }return true;

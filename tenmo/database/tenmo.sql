@@ -45,6 +45,7 @@ CREATE SEQUENCE seq_transfer_id
 	to_user_id int NOT NULL,
  	to_account_id int NOT NULL,
 	transfer_amount decimal(13,2) NOT NULL,
+	is_approved boolean,
  	CONSTRAINT PK_transfer PRIMARY KEY (transfer_id),
 	CONSTRAINT FK_from_user_id FOREIGN KEY (from_user_id) REFERENCES tenmo_user (user_id),
 	CONSTRAINT FK_from_account_id FOREIGN KEY (from_account_id) REFERENCES account (account_id),

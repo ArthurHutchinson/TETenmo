@@ -7,6 +7,7 @@ public class Transfer {
     private int transferId;
     private int fromUserId;
     private int fromAccountId;
+    private String toUsername;
     private int toUserId;
     private int toAccountId;
     private BigDecimal transferAmount = new BigDecimal("0.00");
@@ -29,6 +30,14 @@ public class Transfer {
         this.toUserId = toUserId;
         this.toAccountId = toAccountId;
         this.transferAmount = transferAmount;
+    }
+
+    public String getToUsername() {
+        return toUsername;
+    }
+
+    public void setToUsername(String toUsername) {
+        this.toUsername = toUsername;
     }
 
     public int getTransferId() {
