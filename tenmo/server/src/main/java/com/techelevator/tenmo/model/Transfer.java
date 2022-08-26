@@ -8,15 +8,17 @@ public class Transfer {
     private int fromAccountId;
     private String toUsername;
     private int toAccountId;
+    private boolean isApproved;
     private BigDecimal transferAmount = new BigDecimal("0.00");
 
     public Transfer() {
     }
 
-    public Transfer(int fromAccountId, int toAccountId, BigDecimal transferAmount) {
+    public Transfer(int fromAccountId, int toAccountId, BigDecimal transferAmount, boolean isApproved) {
         this.fromAccountId = fromAccountId;
         this.toAccountId = toAccountId;
         this.transferAmount = transferAmount;
+        this.isApproved = isApproved();
     }
 
     public Transfer(int transferId, int fromAccountId, int toAccountId, BigDecimal transferAmount) {
@@ -66,14 +68,23 @@ public class Transfer {
         this.transferAmount = transferAmount;
     }
 
+    public boolean isApproved() {
+        return isApproved;
+    }
+
+    public void setApproved(boolean approved) {
+        isApproved = approved;
+    }
+
     @Override
     public String toString() {
         return "Transfer{" +
                 "transferId=" + transferId +
                 ", fromAccountId=" + fromAccountId +
+                ", toUsername='" + toUsername + '\'' +
                 ", toAccountId=" + toAccountId +
+                ", isApproved=" + isApproved +
                 ", transferAmount=" + transferAmount +
                 '}';
     }
-
 }

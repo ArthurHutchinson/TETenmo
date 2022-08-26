@@ -1,15 +1,12 @@
 package com.techelevator.tenmo.dao;
 
-import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,7 +77,7 @@ public class JdbcTransferDao implements TransferDao{
         if(newTransfer.getFromAccountId() == newTransfer.getToAccountId()
                 || bigBalance.compareTo(newTransfer.getTransferAmount()) <= 0
                 || newTransfer.getTransferAmount().compareTo(zero) == 0) {
-          return null  ;
+          return null;
         }
 
         // TODO: Sending transfer has an initial status of "Approved".
@@ -90,13 +87,21 @@ public class JdbcTransferDao implements TransferDao{
                 newTransfer.getFromAccountId(),
                 newTransfer.getToAccountId(),
                 newTransfer.getTransferAmount());
-        newTransfer.setTransferId(newId);
+                newTransfer.setTransferId(newId);
 
         // This updates the account balance.
         jdbcTemplate.update(sqlFrom,newTransfer.getTransferAmount(),newTransfer.getFromAccountId());
         jdbcTemplate.update(sqlTo,newTransfer.getTransferAmount(),newTransfer.getToAccountId());
 
         return newTransfer;
+    }
+
+    @Override
+    public Transfer setStatusToApproved(Transfer pendingTransfer){
+        String sql = "UPDATE transfer SET is_approved = true WHERE transfer_id = ?;";
+        jdbcTemplate.update(sql, pendingTransfer.getTransferId());
+
+        return pendingTransfer;
     }
 
 
