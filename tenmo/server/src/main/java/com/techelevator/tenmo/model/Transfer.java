@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 public class Transfer {
 
+    private String fromUsername;
     private int transferId;
     private int fromAccountId;
     private String toUsername;
@@ -76,10 +77,19 @@ public class Transfer {
         isApproved = approved;
     }
 
+    public String getFromUsername() {
+        return fromUsername;
+    }
+
+    public void setFromUsername(String fromUsername) {
+        this.fromUsername = fromUsername;
+    }
+
     @Override
     public String toString() {
         return "Transfer{" +
-                "transferId=" + transferId +
+                "fromUsername='" + fromUsername + '\'' +
+                ", transferId=" + transferId +
                 ", fromAccountId=" + fromAccountId +
                 ", toUsername='" + toUsername + '\'' +
                 ", toAccountId=" + toAccountId +

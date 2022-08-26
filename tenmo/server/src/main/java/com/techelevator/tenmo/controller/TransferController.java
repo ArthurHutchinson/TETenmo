@@ -40,7 +40,7 @@ public class TransferController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(value = "/transfer", method = RequestMethod.POST)
-    public boolean createTransfer(@RequestBody Transfer newTransfer) {
+    public boolean sendTransfer(@RequestBody Transfer newTransfer) {
 // use accountDao to find out (from/to)_account_id for given username
         //then set newTransfer to_account and from_account
               if(transferDao.createTransfer(newTransfer) == null){
