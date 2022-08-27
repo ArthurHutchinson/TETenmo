@@ -29,11 +29,12 @@ public class JdbcAccountDao implements AccountDao {
         newAccount.setAccountId(newId);
         return newAccount;
     }
-//    TODO build out this method.
+
     @Override
     public int getAccountIdByUsername(String username){
 
-        String sql = "SELECT MIN(account_id) AS deposit_account FROM account JOIN tenmo_user as t ON t.user_id = account.user_id WHERE username = ?";
+        String sql = "SELECT MIN(account_id) AS deposit_account FROM account \n" +
+                "JOIN tenmo_user as t ON t.user_id = account.user_id WHERE username = ?";
         SqlRowSet result = jdbcTemplate.queryForRowSet(sql, username);
         try {
             if (result.next()) {

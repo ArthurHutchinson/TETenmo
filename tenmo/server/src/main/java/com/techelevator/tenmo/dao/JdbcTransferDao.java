@@ -49,7 +49,7 @@ public class JdbcTransferDao implements TransferDao{
 
                 return newTransfer;
     }
-    
+
     @Override
     public void updateAccountsForTransfer(Transfer pendingTransfer){
         String sqlFrom = "UPDATE account SET balance = balance - ? WHERE account_id = ?;";
