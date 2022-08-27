@@ -19,7 +19,6 @@ public class JdbcTransferDaoTests extends BaseDaoTests{
 
     private static final Transfer TRANSFER_1 = new Transfer(3001, 2001, 2002, new BigDecimal("50.00"), true);
 
-    private static final TransferDTO TRANSFER_DTO_1 = new TransferDTO();
 
     private static final Account ACCOUNT_1 = new Account(2001,1001, new BigDecimal("1000.00"));
     private static final Account ACCOUNT_2 = new Account(2002,1002, new BigDecimal("2000.00"));
@@ -27,7 +26,11 @@ public class JdbcTransferDaoTests extends BaseDaoTests{
     private static final User USER_1 = new User(1001, "TestUser1", "$2a$10$G/MIQ7pUYupiVi72DxqHquxl73zfd7ZLNBoB2G6zUb.W16imI2.W2", "USER");
     private static final User USER_2 = new User(1002, "TestUser2", "$2a$10$Ud8gSvRS4G1MijNgxXWzcexeXlVs4kWDOkjE7JFIkNLKEuE57JAEy", "USER");
 
+    private static final TransferDTO TRANSFER_DTO_1 = new TransferDTO(USER_1.getUsername(), USER_2.getUsername(), TRANSFER_1.getTransferAmount());
+
     private JdbcTransferDao sut;
+
+
 
     // TODO: Place some tests for the transfers, refer to test-data.sql and make private data to compare.
 
@@ -40,12 +43,14 @@ public class JdbcTransferDaoTests extends BaseDaoTests{
     @Test
     public void getTransferByUserId_returns_transfer() {
         List<TransferDTO> transfers = sut.getTransfersByUserId(USER_1.getId(), USER_1.getUsername(), ACCOUNT_1.getAccountId());
-        Assert.assertEquals(TRANSFER_DTO_1,transfers.get(0));
+        assertTransferDTOMatch(TRANSFER_DTO_1,transfers.get(0));
     }
 
     @Test
     public void getTransferByUserId_returns_empty() {
-        Assert.fail();
+        List<TransferDTO> transfers = sut.getTransfersByUserId(0, "I don't exist", 5000);
+        List<TransferDTO> empty = new ArrayList<>();
+        Assert.assertEquals(empty, transfers);
     }
 
     @Test
@@ -54,14 +59,16 @@ public class JdbcTransferDaoTests extends BaseDaoTests{
                 USER_1.getUsername(),
                 ACCOUNT_1.getAccountId(),
                 TRANSFER_1.getTransferId());
-        Assert.assertEquals(TRANSFER_DTO_1,transfer.get(0));
+        assertTransferDTOMatch(TRANSFER_DTO_1,transfer.get(0));
     }
 
     //
 
     @Test
     public void getTransferByTransferId_returns_null() {
-        Assert.fail();
+        List<TransferDTO> transfers = sut.getTransferByTransferId(0, "I don't exist", 5000, 2);
+        List<TransferDTO> empty = new ArrayList<>();
+        Assert.assertEquals(empty, transfers);
     }
 
     @Test

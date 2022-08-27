@@ -11,7 +11,7 @@ public class TransferDTO {
     public TransferDTO() {
     }
 
-    public TransferDTO(String toUserName, String fromUserName, BigDecimal transferAmount) {
+    public TransferDTO(String fromUserName, String toUserName, BigDecimal transferAmount) {
         this.toUserName = toUserName;
         this.fromUserName = fromUserName;
         this.transferAmount = transferAmount;
