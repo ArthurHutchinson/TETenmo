@@ -41,18 +41,23 @@ public class JdbcTransferDaoTests extends BaseDaoTests{
         Assert.assertEquals(TRANSFER_1,transfers.get(0));
     }
 
-//    @Test
-//    public void getTransferByUserId_returns_empty() {
-//        List<Transfer> transfers = sut.getTransfersByUserId(9999);
-//        List<Transfer> empty = new ArrayList<>();
-//        Assert.assertEquals(empty, transfers);
-//    }
-//
-//    @Test
-//    public void getTransferByTransferId_returns_transfer() {
-//        List<Transfer> transfer = sut.getTransferByTransferId(TRANSFER_1.getTransferId(), USER_1.getId());
-//        assertTransferMatch(TRANSFER_1,transfer.get(0));
-//    }
+    @Test
+    public void getTransferByUserId_returns_empty() {
+        List<Transfer> transfers = sut.getTransfersByUserId(9999);
+        List<Transfer> empty = new ArrayList<>();
+        Assert.assertEquals(empty, transfers);
+    }
+
+
+
+
+
+    @Test
+    public void getTransferByTransferId_returns_transfer() {
+        List<Transfer> transfer = sut.getTransferByTransferId(TRANSFER_1.getTransferId(), USER_1.getId());
+        assertTransferMatch(TRANSFER_1,transfer.get(0));
+    }
+
 
     @Test
     public void getTransferByTransferId_returns_null() {
@@ -60,6 +65,15 @@ public class JdbcTransferDaoTests extends BaseDaoTests{
         List<Transfer> empty = new ArrayList<>();
         Assert.assertEquals(empty, transfer);
     }
+=======
+//
+//    @Test
+//    public void getTransferByTransferId_returns_null() {
+//        List<Transfer> transfer = sut.getTransferByTransferId(9999,9999);
+//        List<Transfer> empty = new ArrayList<>();
+//        Assert.assertEquals(empty, transfer);
+//    }
+>>>>>>> 8b9d8b243ef38949e273a42f2d78ad2347fa1068
 
     @Test
     public void createNewTransfer() {
