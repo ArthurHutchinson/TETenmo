@@ -22,7 +22,7 @@ public class Transfer {
         this.isApproved = isApproved();
     }
 
-    public Transfer(int transferId, int fromAccountId, int toAccountId, BigDecimal transferAmount) {
+    public Transfer(int transferId, int fromAccountId, int toAccountId, BigDecimal transferAmount, boolean isApproved) {
         this.transferId = transferId;
         this.fromAccountId = fromAccountId;
         this.toAccountId = toAccountId;
