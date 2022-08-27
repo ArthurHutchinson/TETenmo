@@ -3,6 +3,7 @@ package com.techelevator.dao;
 import com.techelevator.tenmo.dao.JdbcAccountDao;
 import com.techelevator.tenmo.dao.JdbcTransferDao;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.User;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +15,12 @@ import java.util.List;
 
 public class JdbcTransferDaoTests extends BaseDaoTests{
 
-    private static final Transfer TRANSFER_1 = new Transfer(3001, 2001, 2002, new BigDecimal("1000.00"), true);
+    private static final Transfer TRANSFER_1 = new Transfer(3001, 2001, 2002, new BigDecimal("50.00"), true);
+    private static Transfer newTransfer = new Transfer(2001, 2002, new BigDecimal("175.00"), true);
+    private static final User USER_1 = new User(1001, "TestUser1", "$2a$10$G/MIQ7pUYupiVi72DxqHquxl73zfd7ZLNBoB2G6zUb.W16imI2.W2", "USER");
+    private static final User USER_2 = new User(1002, "TestUser2", "$2a$10$Ud8gSvRS4G1MijNgxXWzcexeXlVs4kWDOkjE7JFIkNLKEuE57JAEy", "USER");
+
+
 
     private JdbcTransferDao sut;
 
@@ -28,33 +34,35 @@ public class JdbcTransferDaoTests extends BaseDaoTests{
 
     @Test
     public void getTransferByUserId_returns_transfer() {
-        // This doesn't work in the current state of code.
-        // There is no getUserId
-        Assert.fail();
+        List<Transfer> transfers = sut.getTransfersByUserId(USER_1.getId());
+        assertTransferMatch(TRANSFER_1,transfers.get(0));
     }
 
     @Test
-    public void getTransferByUserId_returns_null() {
-        // This doesn't work in the current state of code.
-        // There is no getUserId
-        Assert.fail();
+    public void getTransferByUserId_returns_empty() {
+        List<Transfer> transfers = sut.getTransfersByUserId(9999);
+        List<Transfer> empty = new ArrayList<>();
+        Assert.assertEquals(empty, transfers);
     }
 
     @Test
     public void getTransferByTransferId_returns_transfer() {
-        List<Transfer> transfer = sut.getTransferByTransferId(TRANSFER_1.getTransferId(), 1001);
+        List<Transfer> transfer = sut.getTransferByTransferId(TRANSFER_1.getTransferId(), USER_1.getId());
         assertTransferMatch(TRANSFER_1,transfer.get(0));
-        // There is no getUserId
     }
 
     @Test
     public void getTransferByTransferId_returns_null() {
-        Assert.fail();
+        List<Transfer> transfer = sut.getTransferByTransferId(9999,9999);
+        List<Transfer> empty = new ArrayList<>();
+        Assert.assertEquals(empty, transfer);
     }
 
     @Test
     public void createNewTransfer() {
-        Assert.fail();
+        Transfer transfer = sut.createTransfer(newTransfer);
+//        Assert
+
     }
 
     private void assertTransferMatch(Transfer expected, Transfer actual) {
