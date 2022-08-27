@@ -2,6 +2,7 @@ package com.techelevator.dao;
 
 import com.techelevator.tenmo.dao.JdbcAccountDao;
 import com.techelevator.tenmo.model.Account;
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import org.junit.Assert;
 import org.junit.Before;
@@ -55,6 +56,38 @@ public class JdbcAccountDaoTests extends BaseDaoTests{
     public void get_account_id_by_username_returns_only_correct_account_id() {
         int test = sut.getAccountIdByUsername(USER_1.getUsername());
         Assert.assertNotEquals(2002,  ACCOUNT_1.getAccountId());
+    }
+
+    @Test
+    public void createAccount() {
+//        Transfer newTransfer = new Transfer(2001, 2002, new BigDecimal("175.00"), false);
+//        Transfer createdTransfer = sut.createTransfer(newTransfer);
+//
+//        Assert.assertNotNull(createdTransfer);
+//
+//        Integer newId = createdTransfer.getTransferId();
+//        Assert.assertTrue(newId > 0);
+//
+//        newTransfer.setTransferId(newId);
+//        assertTransferMatch(newTransfer,createdTransfer);
+
+        Account newAccount = new Account(1001, new BigDecimal("3000.00"));
+        Account createdAccount = sut.createAccount(newAccount);
+
+        Assert.assertNotNull(createdAccount);
+
+        Integer newId = createdAccount.getAccountId();
+        Assert.assertTrue(newId > 0);
+
+        newAccount.setAccountId(newId);
+        assertAccountMatch(newAccount,createdAccount);
+
+    }
+
+    private void assertAccountMatch(Account expected, Account actual){
+        Assert.assertEquals(expected.getAccountId(),actual.getAccountId());
+        Assert.assertEquals(expected.getUserId(),actual.getUserId());
+        Assert.assertEquals(expected.getBalance(),actual.getBalance());
     }
 
 }

@@ -62,12 +62,16 @@ public class JdbcTransferDaoTests extends BaseDaoTests{
 
     @Test
     public void createNewTransfer() {
-        // (2001, new BigDecimal("175.00"), true)
-        Transfer newTransfer = new Transfer(0, 2002, new BigDecimal("175.00"), false);
-        Account account = new Account(2002, 1002, new BigDecimal("1000.00"));
-        Transfer transfer = sut.createTransfer(newTransfer);
-        Assert.assertNotEquals(0,transfer.getTransferId());
-        Assert.assertTrue(transfer.isApproved());
+        Transfer newTransfer = new Transfer(2001, 2002, new BigDecimal("175.00"), false);
+        Transfer createdTransfer = sut.createTransfer(newTransfer);
+
+        Assert.assertNotNull(createdTransfer);
+
+        Integer newId = createdTransfer.getTransferId();
+        Assert.assertTrue(newId > 0);
+
+        newTransfer.setTransferId(newId);
+        assertTransferMatch(newTransfer,createdTransfer);
     }
 
     private void assertTransferMatch(Transfer expected, Transfer actual) {
