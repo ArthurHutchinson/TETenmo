@@ -2,6 +2,7 @@ package com.techelevator.dao;
 
 import com.techelevator.tenmo.dao.JdbcAccountDao;
 import com.techelevator.tenmo.dao.JdbcTransferDao;
+import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import org.junit.Assert;
@@ -16,11 +17,12 @@ import java.util.List;
 public class JdbcTransferDaoTests extends BaseDaoTests{
 
     private static final Transfer TRANSFER_1 = new Transfer(3001, 2001, 2002, new BigDecimal("50.00"), true);
-    private static Transfer newTransfer = new Transfer(2001, 2002, new BigDecimal("175.00"), true);
+
+    private static final Account ACCOUNT_1 = new Account(2001,1001, new BigDecimal("1000.00"));
+    private static final Account ACCOUNT_2 = new Account(2002,1002, new BigDecimal("2000.00"));
+
     private static final User USER_1 = new User(1001, "TestUser1", "$2a$10$G/MIQ7pUYupiVi72DxqHquxl73zfd7ZLNBoB2G6zUb.W16imI2.W2", "USER");
     private static final User USER_2 = new User(1002, "TestUser2", "$2a$10$Ud8gSvRS4G1MijNgxXWzcexeXlVs4kWDOkjE7JFIkNLKEuE57JAEy", "USER");
-
-
 
     private JdbcTransferDao sut;
 
@@ -60,9 +62,12 @@ public class JdbcTransferDaoTests extends BaseDaoTests{
 
     @Test
     public void createNewTransfer() {
+        // (2001, new BigDecimal("175.00"), true)
+        Transfer newTransfer = new Transfer(0, 2002, new BigDecimal("175.00"), false);
+        Account account = new Account(2002, 1002, new BigDecimal("1000.00"));
         Transfer transfer = sut.createTransfer(newTransfer);
-//        Assert
-
+        Assert.assertNotEquals(0,transfer.getTransferId());
+        Assert.assertTrue(transfer.isApproved());
     }
 
     private void assertTransferMatch(Transfer expected, Transfer actual) {
