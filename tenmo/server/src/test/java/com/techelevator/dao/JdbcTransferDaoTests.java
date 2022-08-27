@@ -56,7 +56,9 @@ public class JdbcTransferDaoTests extends BaseDaoTests{
                 TRANSFER_1.getTransferId());
         Assert.assertEquals(TRANSFER_DTO_1,transfer.get(0));
     }
-//
+
+    //
+
     @Test
     public void getTransferByTransferId_returns_null() {
         Assert.fail();
@@ -92,3 +94,23 @@ public class JdbcTransferDaoTests extends BaseDaoTests{
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

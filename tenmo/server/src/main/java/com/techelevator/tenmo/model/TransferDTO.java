@@ -8,6 +8,15 @@ public class TransferDTO {
     private String fromUserName;
     private BigDecimal transferAmount;
 
+    public TransferDTO() {
+    }
+
+    public TransferDTO(String toUserName, String fromUserName, BigDecimal transferAmount) {
+        this.toUserName = toUserName;
+        this.fromUserName = fromUserName;
+        this.transferAmount = transferAmount;
+    }
+
     public String getToUserName() {
         return toUserName;
     }
