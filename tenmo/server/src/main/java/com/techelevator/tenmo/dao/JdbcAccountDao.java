@@ -1,16 +1,13 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Account;
-import com.techelevator.tenmo.model.LoginDTO;
-import com.techelevator.tenmo.model.User;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 //TODO: Add Authentication and Authorization Tags
 
@@ -34,8 +31,18 @@ public class JdbcAccountDao implements AccountDao {
     }
 //    TODO build out this method.
     @Override
-    public int getAccountIdByUserId(int userId){
-        String sql = "SELECT account_id FROM "
+    public int getAccountIdByUsername(String username){
+
+        String sql = "SELECT MIN(account_id) AS deposit_account FROM account JOIN tenmo_user as t ON t.user_id = account.user_id WHERE username = ?";
+        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, username);
+        try {
+            if (result.next()) {
+                int accountId = result.getInt("deposit_account");
+                return accountId;
+            }
+        }catch (DataAccessException e){
+            System.err.println("data access exception");
+        }return 0;
     }
 
     @Override
@@ -49,7 +56,7 @@ public class JdbcAccountDao implements AccountDao {
             return account.getBalance();
         }
         }catch (NullPointerException e) {
-            return null;
+            System.err.println("null pointer exception");
         }return null;
     }
 

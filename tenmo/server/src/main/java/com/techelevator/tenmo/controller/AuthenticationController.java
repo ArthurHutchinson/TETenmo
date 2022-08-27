@@ -43,6 +43,7 @@ public class AuthenticationController {
         this.accountDao = accountDao;
     }
 
+
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public LoginResponse login(@Valid @RequestBody LoginDTO loginDto) {
 
@@ -52,11 +53,11 @@ public class AuthenticationController {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.createToken(authentication, false);
-
         User user = userDao.findByUsername(loginDto.getUsername());
 
         return new LoginResponse(jwt, user);
     }
+
 
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(value = "/register", method = RequestMethod.POST)

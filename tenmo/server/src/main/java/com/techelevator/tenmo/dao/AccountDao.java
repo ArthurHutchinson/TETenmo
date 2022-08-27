@@ -8,6 +8,9 @@ public interface AccountDao {
 
     Account createAccount (Account account);
 
+    //    TODO build out this method.
+    int getAccountIdByUsername(String username);
+
     BigDecimal getBalance (int accountId);
 
 

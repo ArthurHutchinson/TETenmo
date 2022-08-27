@@ -20,46 +20,6 @@ public class JdbcTransferDao implements TransferDao{
     }
 
 
-    // This is the original method
-    //need transferController post method to set newTransfer to_account_id & from_account_id
-//    @Override
-//    public Transfer createTransfer(Transfer newTransfer) {
-//
-//        String sql = "INSERT INTO transfer \n" +
-//        "(from_user_id, from_account_id, to_user_id, to_account_id, transfer_amount)\n" +
-//                "VALUES ((SELECT user_id FROM tenmo_user WHERE user_id = ?),?,?,?,?) RETURNING transfer_id;";
-//        String sqlFrom = "UPDATE account SET balance = balance - ? WHERE account_id = ?;";
-//        String sqlTo = "UPDATE account SET balance = balance + ? WHERE account_id = ?;";
-//        String sqlBalance = "SELECT balance FROM account WHERE account_id = ?;";
-//        Integer balance = jdbcTemplate.queryForObject(sqlBalance, Integer.class, newTransfer.getFromAccountId());
-//        BigDecimal bigBalance = new BigDecimal(balance);
-//        BigDecimal zero = new BigDecimal("0.0");
-//        if(newTransfer.getFromAccountId() == newTransfer.getToAccountId()
-//                || bigBalance.compareTo(newTransfer.getTransferAmount())  == -1
-//                || (newTransfer.getFromUserId() == newTransfer.getToUserId()
-//                || newTransfer.getTransferAmount().compareTo(zero) == 0)) {
-//          return null  ;
-//        }
-//        // TODO: Sending transfer has an initial status of "Approved".
-//
-//        // This creates a new insert into the transfer table in SQL
-//        Integer newId = jdbcTemplate.queryForObject(sql, Integer.class,
-//                newTransfer.getFromUserId() , newTransfer.getFromAccountId(),
-//                newTransfer.getToUserId(), newTransfer.getToAccountId(),
-//                newTransfer.getTransferAmount());
-//        newTransfer.setTransferId(newId);
-//
-//        // This updates the account balance.
-//        jdbcTemplate.update(sqlFrom,newTransfer.getTransferAmount(),newTransfer.getFromAccountId());
-//        jdbcTemplate.update(sqlTo,newTransfer.getTransferAmount(),newTransfer.getToAccountId());
-//
-//        return newTransfer;
-//    }
-
-
-
-
-    // TODO: TEST THIS
     @Override
     public Transfer createTransfer(Transfer newTransfer) {
 
@@ -68,28 +28,17 @@ public class JdbcTransferDao implements TransferDao{
                 "VALUES (?,?,?)\n" +
                 "RETURNING transfer_id;";
 
-        String sqlFrom = "UPDATE account SET balance = balance - ? WHERE account_id = ?;";
-        String sqlTo = "UPDATE account SET balance = balance + ? WHERE account_id = ?;";
-
         String sqlBalance = "SELECT balance FROM account WHERE account_id = ?;";
-
-
-        String sqlFromUser = "SELECT user_id FROM account WHERE from_account_id = ?";
-        String sqlToUser = "SELECT user_id FROM account WHERE to_account_id = ?";
-
-        // Prevent transferring from same account, transferring funds beyond account balance.
-        String fromUser = jdbcTemplate.queryForObject(sqlFromUser, String.class, newTransfer.getFromAccountId());
-        String toUser = jdbcTemplate.queryForObject(sqlToUser, String.class, newTransfer.getToAccountId());
 
         Integer balance = jdbcTemplate.queryForObject(sqlBalance, Integer.class, newTransfer.getFromAccountId());
         BigDecimal bigBalance = new BigDecimal(balance);
         BigDecimal zero = new BigDecimal("0.0");
 
         if(newTransfer.getFromAccountId() == newTransfer.getToAccountId()
-                || fromUser.equals(toUser)
+                || newTransfer.getFromUsername() == newTransfer.getToUsername()
                 || bigBalance.compareTo(newTransfer.getTransferAmount()) <= 0
                 || newTransfer.getTransferAmount().compareTo(zero) <= 0) {
-          return null;
+            return null;
         }
 
         // This creates a new insert into the transfer table in SQL
@@ -100,10 +49,18 @@ public class JdbcTransferDao implements TransferDao{
                 newTransfer.setTransferId(newId);
 
         // This updates the account balance.
-        jdbcTemplate.update(sqlFrom,newTransfer.getTransferAmount(),newTransfer.getFromAccountId());
-        jdbcTemplate.update(sqlTo,newTransfer.getTransferAmount(),newTransfer.getToAccountId());
+
 
         return newTransfer;
+    }
+    @Override
+    public void updateAccountsForTransfer(Transfer pendingTransfer){
+        String sqlFrom = "UPDATE account SET balance = balance - ? WHERE account_id = ?;";
+        String sqlTo = "UPDATE account SET balance = balance + ? WHERE account_id = ?;";
+
+        jdbcTemplate.update(sqlFrom,pendingTransfer.getTransferAmount(),pendingTransfer.getFromAccountId());
+        jdbcTemplate.update(sqlTo,pendingTransfer.getTransferAmount(),pendingTransfer.getToAccountId());
+
     }
 
     @Override

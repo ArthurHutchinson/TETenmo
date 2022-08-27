@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +35,19 @@ public class JdbcUserDao implements UserDao {
         } catch (EmptyResultDataAccessException e) {
             return -1;
         }
+    }
+
+
+    @Override
+    public List<String> findAllUsernames() {
+        List<String> usernames = new ArrayList<>();
+        String sql = "SELECT user_id, username, password_hash FROM tenmo_user;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        while(results.next()) {
+            User user = mapRowToUser(results);
+            usernames.add(user.getUsername());
+        }
+        return usernames;
     }
 
     @Override
@@ -78,7 +90,6 @@ public class JdbcUserDao implements UserDao {
             return false;
         }
 
-        // TODO: Create the account record with initial balance
 
         return true;
     }
