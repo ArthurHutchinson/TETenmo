@@ -4,6 +4,7 @@ import com.techelevator.tenmo.dao.JdbcAccountDao;
 import com.techelevator.tenmo.dao.JdbcTransferDao;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.TransferDTO;
 import com.techelevator.tenmo.model.User;
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,6 +18,8 @@ import java.util.List;
 public class JdbcTransferDaoTests extends BaseDaoTests{
 
     private static final Transfer TRANSFER_1 = new Transfer(3001, 2001, 2002, new BigDecimal("50.00"), true);
+
+    private static final TransferDTO TRANSFER_DTO_1 = new TransferDTO();
 
     private static final Account ACCOUNT_1 = new Account(2001,1001, new BigDecimal("1000.00"));
     private static final Account ACCOUNT_2 = new Account(2002,1002, new BigDecimal("2000.00"));
@@ -34,31 +37,30 @@ public class JdbcTransferDaoTests extends BaseDaoTests{
         sut = new JdbcTransferDao(dataSource);
     }
 
-//    @Test
-//    public void getTransferByUserId_returns_transfer() {
-//        List<Transfer> transfers = sut.getTransfersByUserId(USER_1.getId());
-//        assertTransferMatch(TRANSFER_1,transfers.get(0));
-//    }
-//
-//    @Test
-//    public void getTransferByUserId_returns_empty() {
-//        List<Transfer> transfers = sut.getTransfersByUserId(9999);
-//        List<Transfer> empty = new ArrayList<>();
-//        Assert.assertEquals(empty, transfers);
-//    }
+    @Test
+    public void getTransferByUserId_returns_transfer() {
+        List<TransferDTO> transfers = sut.getTransfersByUserId(USER_1.getId(), USER_1.getUsername(), ACCOUNT_1.getAccountId());
+        Assert.assertEquals(TRANSFER_DTO_1,transfers.get(0));
+    }
 
-//    @Test
-//    public void getTransferByTransferId_returns_transfer() {
-//        List<Transfer> transfer = sut.getTransferByTransferId(TRANSFER_1.getTransferId(), USER_1.getId());
-//        assertTransferMatch(TRANSFER_1,transfer.get(0));
-//    }
+    @Test
+    public void getTransferByUserId_returns_empty() {
+        Assert.fail();
+    }
+
+    @Test
+    public void getTransferByTransferId_returns_transfer() {
+        List<TransferDTO> transfer = sut.getTransferByTransferId(USER_1.getId(),
+                USER_1.getUsername(),
+                ACCOUNT_1.getAccountId(),
+                TRANSFER_1.getTransferId());
+        Assert.assertEquals(TRANSFER_DTO_1,transfer.get(0));
+    }
 //
-//    @Test
-//    public void getTransferByTransferId_returns_null() {
-//        List<Transfer> transfer = sut.getTransferByTransferId(9999,9999);
-//        List<Transfer> empty = new ArrayList<>();
-//        Assert.assertEquals(empty, transfer);
-//    }
+    @Test
+    public void getTransferByTransferId_returns_null() {
+        Assert.fail();
+    }
 
     @Test
     public void createNewTransfer() {
@@ -81,6 +83,12 @@ public class JdbcTransferDaoTests extends BaseDaoTests{
         Assert.assertEquals(expected.getTransferAmount(), actual.getTransferAmount());
         Assert.assertEquals(expected.getFromUsername(), actual.getFromUsername());
         Assert.assertEquals(expected.getToUsername(), actual.getToUsername());
+    }
+
+    private void assertTransferDTOMatch (TransferDTO expected, TransferDTO actual) {
+        Assert.assertEquals(expected.getFromUserName(), actual.getFromUserName());
+        Assert.assertEquals(expected.getToUserName(), actual.getToUserName());
+        Assert.assertEquals(expected.getTransferAmount(), actual.getTransferAmount());
     }
 
 }
