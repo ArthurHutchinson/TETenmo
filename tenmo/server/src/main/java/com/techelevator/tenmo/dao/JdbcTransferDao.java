@@ -75,7 +75,7 @@ public class JdbcTransferDao implements TransferDao{
     @Override
     public List<TransferDTO> getTransfersByUserId(int userId, String username, int accountId) {
         List<TransferDTO> transfers = new ArrayList<>();
-        String sql = "SELECT u.username, transfer_amount, transfer_id, t.to_account_id\n" +
+        String sql = "SELECT u.username AS from_user, transfer_amount, transfer_id, t.to_account_id\n" +
                 "FROM transfer AS t\n" +
                 "JOIN account AS a ON a.account_id = t.from_account_id OR a.account_id = t.to_account_id\n" +
                 "JOIN tenmo_user AS u ON a.user_id = u.user_id\n" +
@@ -84,9 +84,10 @@ public class JdbcTransferDao implements TransferDao{
                 "JOIN account AS a ON a.account_id = t.from_account_id OR a.account_id = t.to_account_id\n" +
                 "JOIN tenmo_user AS u ON a.user_id = u.user_id\n" +
                 "WHERE a.user_id = ?) AND \n" +
-                "t.from_account_id = ? AND\n" +
-                "u.username = ?;";
-        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, userId, accountId, username);
+                "t.from_account_id = ? AND u.username = ? OR t.to_account_id = ? AND\n" +
+                "u.username <> ? \n" +
+                "ORDER BY transfer_id;";
+        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, userId, accountId, username, accountId, username);
         String toUserSql = "SELECT u.username AS to_username\n" +
                 "FROM transfer AS t\n" +
                 "JOIN account AS a ON a.account_id = t.from_account_id OR a.account_id = t.to_account_id\n" +
@@ -97,17 +98,19 @@ public class JdbcTransferDao implements TransferDao{
                 "JOIN tenmo_user AS u ON a.user_id = u.user_id\n" +
                 "WHERE a.user_id = ?) AND \n" +
                 "t.from_account_id = ? AND\n" +
-                "u.username <> ?;";
-        SqlRowSet toUserResult = jdbcTemplate.queryForRowSet(toUserSql, userId, accountId, username);
-        TransferDTO transfer = new TransferDTO();
-        while(result.next()) {
-            transfer.setFromUserName(username);
+                "u.username <> ?  OR t.to_account_id = ? AND u.username = ?\n" +
+                "ORDER BY transfer_id;";
+        SqlRowSet toUserResult = jdbcTemplate.queryForRowSet(toUserSql, userId, accountId, username, accountId, username);
+
+        while(result.next() && toUserResult.next()) {
+            TransferDTO transfer = new TransferDTO();
+            transfer.setFromUserName(result.getString("from_user"));
+            transfer.setToUserName(toUserResult.getString("to_username"));
             transfer.setTransferAmount(result.getBigDecimal("transfer_amount"));
+            transfer.setTransferId(result.getInt("transfer_id"));
             transfers.add(transfer);
         }
-        while(toUserResult.next()){
-            transfer.setToUserName(toUserResult.getString("to_username"));
-        }
+
 
         return transfers;
     }
@@ -149,6 +152,7 @@ public class JdbcTransferDao implements TransferDao{
         while(result.next()) {
             transfer.setFromUserName(username);
             transfer.setTransferAmount(result.getBigDecimal("transfer_amount"));
+            transfer.setTransferId(result.getInt("transfer_id"));
             transfers.add(transfer);
         }
         while(toUserResult.next()){
@@ -156,17 +160,6 @@ public class JdbcTransferDao implements TransferDao{
         }
 
         return transfers;
-        //        List<Transfer> transfers = new ArrayList<>();
-//        String sql = "SELECT transfer_id, from_account_id, to_account_id, transfer_amount\n" +
-//                "FROM transfer AS t\n" +
-//                "JOIN account AS a ON a.account_id = t.from_account_id OR a.account_id = t.to_account_id\n" +
-//                "WHERE transfer_id = ? AND (a.user_id = ?);";
-//        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, transferId, userId);
-//        while(result.next()) {
-//            Transfer transfer = mapRowToTransfer(result);
-//            transfers.add(transfer);
-//        }
-//        return transfers;
 
     }
 

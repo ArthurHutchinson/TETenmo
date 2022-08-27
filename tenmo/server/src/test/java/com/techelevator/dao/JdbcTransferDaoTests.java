@@ -26,7 +26,7 @@ public class JdbcTransferDaoTests extends BaseDaoTests{
     private static final User USER_1 = new User(1001, "TestUser1", "$2a$10$G/MIQ7pUYupiVi72DxqHquxl73zfd7ZLNBoB2G6zUb.W16imI2.W2", "USER");
     private static final User USER_2 = new User(1002, "TestUser2", "$2a$10$Ud8gSvRS4G1MijNgxXWzcexeXlVs4kWDOkjE7JFIkNLKEuE57JAEy", "USER");
 
-    private static final TransferDTO TRANSFER_DTO_1 = new TransferDTO(USER_1.getUsername(), USER_2.getUsername(), TRANSFER_1.getTransferAmount());
+    private static final TransferDTO TRANSFER_DTO_1 = new TransferDTO(USER_1.getUsername(), USER_2.getUsername(), TRANSFER_1.getTransferAmount(), TRANSFER_1.getTransferId());
 
     private JdbcTransferDao sut;
 
