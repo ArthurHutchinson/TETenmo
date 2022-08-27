@@ -41,16 +41,19 @@ public class TransferController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(value = "/transfer", method = RequestMethod.POST)
-    public boolean sendTransfer(@RequestBody Transfer newTransfer, Principal principal) {
-// use accountDao to find out (from/to)_account_id for given username
-        //then set newTransfer to_account and from_account
-        String toUserName = newTransfer.getToUsername();
+    public String sendTransfer(@RequestBody Transfer newTransfer, Principal principal) {
+        /* transfer format for postman:
+        *       "toUsername" : "User1"
+        *       "transferAmount : 0.00" */
+        newTransfer.setFromUsername(principal.getName());
+        newTransfer.setToAccountId( accountDao.getAccountIdByUsername(newTransfer.getToUsername()));
+        newTransfer.setFromAccountId( accountDao.getAccountIdByUsername(principal.getName()));
               if(transferDao.createTransfer(newTransfer) == null){
-                  return false;
-
+                  return "Please review the details of your transaction";
               }
+        transferDao.updateAccountsForTransfer(newTransfer);
         transferDao.setStatusToApproved(newTransfer);
-              return true;
+              return "Transfer of " + newTransfer.getTransferAmount() + " to " + newTransfer.getToUsername() + " is complete.";
     }
 
 }
