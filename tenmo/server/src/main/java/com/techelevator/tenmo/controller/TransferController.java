@@ -35,14 +35,18 @@ public class TransferController {
     @RequestMapping(value = "/transfer", method = RequestMethod.GET)
     public List<TransferDTO> findTransfersByUserId(Principal principal) {
 
-        List<TransferDTO> transfers = transferDao.getTransfersByUserId(userDao.findIdByUsername(principal.getName()), principal.getName(), accountDao.getAccountIdByUsername(principal.getName()));
+        List<TransferDTO> transfers = transferDao.getTransfersByUserId(userDao.findIdByUsername(principal.getName()), principal.getName(), accountDao.getAccountIdByUsername(principal.getName()), pri);
 
         return transfers;
 
     }
 
     @RequestMapping(value = "/transfer/{transferId}", method = RequestMethod.GET)
-    public List<Transfer> getTransferById(@PathVariable int transferId, Principal principal) {
+    public List<Transfer> getTransferById(@PathVariable Principal principal) {
+        List<TransferDTO> transfers = transferDao.getTransfersByUserId(userDao.findIdByUsername(principal.getName()),
+                principal.getName(),
+                accountDao.getAccountIdByUsername(principal.getName()),
+                Principal);
         return transferDao.getTransferByTransferId(transferId, userDao.findIdByUsername(principal.getName()));
     }
 
