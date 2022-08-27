@@ -15,10 +15,6 @@ import java.math.BigDecimal;
 
 public class JdbcAccountDaoTests extends BaseDaoTests{
 
-    // TODO: Write DaoTesting for Account, mainly getBalance, refer to test-data.sql and make private data to compare.
-
-    // TODO: Need to figure out how to test automatic creation of account when user is createrd.
-
     private static final Account ACCOUNT_1 = new Account(2001,1001, new BigDecimal("1000.00"));
     private static final Account ACCOUNT_2 = new Account(2002,1002, new BigDecimal("2000.00"));
     private static final User USER_1 = new User(1001, "TestUser1", "$2a$10$G/MIQ7pUYupiVi72DxqHquxl73zfd7ZLNBoB2G6zUb.W16imI2.W2", "USER");
