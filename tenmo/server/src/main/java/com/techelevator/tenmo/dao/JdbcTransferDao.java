@@ -87,26 +87,53 @@ public class JdbcTransferDao implements TransferDao{
                 "t.from_account_id = ? AND\n" +
                 "u.username = ?;";
         SqlRowSet result = jdbcTemplate.queryForRowSet(sql, userId, accountId, username);
+        String toUserSql = "SELECT u.username AS to_username\n" +
+                "FROM transfer AS t\n" +
+                "JOIN account AS a ON a.account_id = t.from_account_id OR a.account_id = t.to_account_id\n" +
+                "JOIN tenmo_user AS u ON a.user_id = u.user_id\n" +
+                "WHERE transfer_id IN (SELECT transfer_id\n" +
+                "FROM transfer AS t \n" +
+                "JOIN account AS a ON a.account_id = t.from_account_id OR a.account_id = t.to_account_id\n" +
+                "JOIN tenmo_user AS u ON a.user_id = u.user_id\n" +
+                "WHERE a.user_id = ?) AND \n" +
+                "t.from_account_id = ? AND\n" +
+                "u.username <> ?;";
+        SqlRowSet toUserResult = jdbcTemplate.queryForRowSet(toUserSql, userId, accountId, username);
+        TransferDTO transfer = new TransferDTO();
         while(result.next()) {
-            TransferDTO transfer = new TransferDTO();
             transfer.setFromUserName(username);
             transfer.setTransferAmount(result.getBigDecimal("transfer_amount"));
             transfers.add(transfer);
         }
+        while(toUserResult.next()){
+            transfer.setToUserName(toUserResult.getString("to_username"));
+        }
+
         return transfers;
     }
 
 
     @Override
-    public List<Transfer> getTransferByTransferId(int transferId, int userId) {
-        List<Transfer> transfers = new ArrayList<>();
-        String sql = "SELECT transfer_id, from_account_id, to_account_id, transfer_amount\n" +
+    public List<TransferDTO> getTransferByTransferId(int userId, String username, int accountId, int transfer_id) {
+
+        List<TransferDTO> transfers = new ArrayList<>();
+        String sql = "SELECT u.username, transfer_amount, transfer_id, t.to_account_id, transfer_id\n" +
                 "FROM transfer AS t\n" +
                 "JOIN account AS a ON a.account_id = t.from_account_id OR a.account_id = t.to_account_id\n" +
-                "WHERE transfer_id = ? AND (a.user_id = ?);";
-        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, transferId, userId);
+                "JOIN tenmo_user AS u ON a.user_id = u.user_id\n" +
+                "WHERE transfer_id IN\n" +
+                "(SELECT transfer_id FROM transfer AS t\n" +
+                "JOIN account AS a ON a.account_id = t.from_account_id OR a.account_id = t.to_account_id\n" +
+                "JOIN tenmo_user AS u ON a.user_id = u.user_id\n" +
+                "WHERE a.user_id = ?) AND\n" +
+                "t.from_account_id = ? AND\n" +
+                "u.username = ? AND\n" +
+                "transfer_id = ?;";
+        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, userId, accountId, username, transfer_id);
         while(result.next()) {
-            Transfer transfer = mapRowToTransfer(result);
+            TransferDTO transfer = new TransferDTO();
+            transfer.setFromUserName(username);
+            transfer.setTransferAmount(result.getBigDecimal("transfer_amount"));
             transfers.add(transfer);
         }
         return transfers;
