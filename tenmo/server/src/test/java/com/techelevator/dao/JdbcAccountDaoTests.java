@@ -47,6 +47,14 @@ public class JdbcAccountDaoTests extends BaseDaoTests{
     public void get_account_id_by_username_returns_account_id(){
        int test = sut.getAccountIdByUsername(USER_1.getUsername());
        Assert.assertEquals(ACCOUNT_1.getUserId(), USER_1.getId());
+       Assert.assertEquals(2001, ACCOUNT_1.getAccountId());
+
+    }
+
+    @Test
+    public void get_account_id_by_username_returns_only_correct_account_id() {
+        int test = sut.getAccountIdByUsername(USER_1.getUsername());
+        Assert.assertNotEquals(2002,  ACCOUNT_1.getAccountId());
     }
 
 }
