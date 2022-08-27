@@ -43,17 +43,19 @@ public class TransferController {
     @RequestMapping(value = "/transfer", method = RequestMethod.POST)
     public String sendTransfer(@RequestBody Transfer newTransfer, Principal principal) {
         /* transfer format for postman:
-        *       "toUsername" : "User1"
-        *       "transferAmount : 0.00" */
+         *       "toUsername" : "User1"
+         *       "transferAmount : 0.00" */
         newTransfer.setFromUsername(principal.getName());
-        newTransfer.setToAccountId( accountDao.getAccountIdByUsername(newTransfer.getToUsername()));
-        newTransfer.setFromAccountId( accountDao.getAccountIdByUsername(principal.getName()));
-              if(transferDao.createTransfer(newTransfer) == null){
-                  return "Please review the details of your transaction";
-              }
-        transferDao.updateAccountsForTransfer(newTransfer);
-        transferDao.setStatusToApproved(newTransfer);
-              return "Transfer of " + newTransfer.getTransferAmount() + " to " + newTransfer.getToUsername() + " is complete.";
+        newTransfer.setToAccountId(accountDao.getAccountIdByUsername(newTransfer.getToUsername()));
+        newTransfer.setFromAccountId(accountDao.getAccountIdByUsername(principal.getName()));
+        if (transferDao.verifyTransferIsLegit(newTransfer) == 1) {
+            if (transferDao.createTransfer(newTransfer) == null) {
+                return "Please review the details of your transaction";
+            }
+            transferDao.updateAccountsForTransfer(newTransfer);
+            transferDao.setStatusToApproved(newTransfer);
+            return "Transfer of " + newTransfer.getTransferAmount() + " to " + newTransfer.getToUsername() + " is complete.";
+        }
+        return "Please review the details of your transaction";
     }
-
 }

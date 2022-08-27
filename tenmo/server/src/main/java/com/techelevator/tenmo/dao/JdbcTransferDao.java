@@ -29,16 +29,16 @@ public class JdbcTransferDao implements TransferDao{
                 "RETURNING transfer_id;";
 
         //        this block protects from various fraudulent transfer attempts.
-        String sqlBalance = "SELECT balance FROM account WHERE account_id = ?;";
-        Integer balance = jdbcTemplate.queryForObject(sqlBalance, Integer.class, newTransfer.getFromAccountId());
-        BigDecimal bigBalance = new BigDecimal(balance);
-        BigDecimal zero = new BigDecimal("0.0");
-        if(newTransfer.getFromAccountId() == newTransfer.getToAccountId()
-                || newTransfer.getFromUsername() == newTransfer.getToUsername()
-                || bigBalance.compareTo(newTransfer.getTransferAmount()) <= 0
-                || newTransfer.getTransferAmount().compareTo(zero) <= 0) {
-            return null;
-        }
+//        String sqlBalance = "SELECT balance FROM account WHERE account_id = ?;";
+//        Integer balance = jdbcTemplate.queryForObject(sqlBalance, Integer.class, newTransfer.getFromAccountId());
+//        BigDecimal bigBalance = new BigDecimal(balance);
+//        BigDecimal zero = new BigDecimal("0.0");
+//        if(newTransfer.getFromAccountId() == newTransfer.getToAccountId()
+//                || newTransfer.getFromUsername() == newTransfer.getToUsername()
+//                || bigBalance.compareTo(newTransfer.getTransferAmount()) <= 0
+//                || newTransfer.getTransferAmount().compareTo(zero) <= 0) {
+//            return null;
+//        }
 
         // This creates a new insert into the transfer table in SQL
         Integer newId = jdbcTemplate.queryForObject(sql, Integer.class,
@@ -48,6 +48,20 @@ public class JdbcTransferDao implements TransferDao{
                 newTransfer.setTransferId(newId);
 
                 return newTransfer;
+    }
+
+    @Override
+    public int verifyTransferIsLegit(Transfer newTransfer){
+        String sqlBalance = "SELECT balance FROM account WHERE account_id = ?;";
+        Integer balance = jdbcTemplate.queryForObject(sqlBalance, Integer.class, newTransfer.getFromAccountId());
+        BigDecimal bigBalance = new BigDecimal(balance);
+        BigDecimal zero = new BigDecimal("0.0");
+        if(newTransfer.getFromAccountId() == newTransfer.getToAccountId()
+                || newTransfer.getFromUsername() == newTransfer.getToUsername()
+                || bigBalance.compareTo(newTransfer.getTransferAmount()) <= 0
+                || newTransfer.getTransferAmount().compareTo(zero) <= 0) {
+            return 0;
+        }return 1;
     }
 
     @Override

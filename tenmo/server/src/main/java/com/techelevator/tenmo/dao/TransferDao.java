@@ -8,6 +8,8 @@ public interface TransferDao {
 
     Transfer createTransfer(Transfer transfer);
 
+    int verifyTransferIsLegit(Transfer newTransfer);
+
     void updateAccountsForTransfer(Transfer pendingTransfer);
 
     Transfer setStatusToApproved(Transfer pendingTransfer);
