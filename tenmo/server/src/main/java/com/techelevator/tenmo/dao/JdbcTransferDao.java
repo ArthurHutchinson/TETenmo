@@ -28,12 +28,11 @@ public class JdbcTransferDao implements TransferDao{
                 "VALUES (?,?,?)\n" +
                 "RETURNING transfer_id;";
 
+        //        this block protects from various fraudulent transfer attempts.
         String sqlBalance = "SELECT balance FROM account WHERE account_id = ?;";
-
         Integer balance = jdbcTemplate.queryForObject(sqlBalance, Integer.class, newTransfer.getFromAccountId());
         BigDecimal bigBalance = new BigDecimal(balance);
         BigDecimal zero = new BigDecimal("0.0");
-
         if(newTransfer.getFromAccountId() == newTransfer.getToAccountId()
                 || newTransfer.getFromUsername() == newTransfer.getToUsername()
                 || bigBalance.compareTo(newTransfer.getTransferAmount()) <= 0
@@ -48,11 +47,9 @@ public class JdbcTransferDao implements TransferDao{
                 newTransfer.getTransferAmount());
                 newTransfer.setTransferId(newId);
 
-        // This updates the account balance.
-
-
-        return newTransfer;
+                return newTransfer;
     }
+    
     @Override
     public void updateAccountsForTransfer(Transfer pendingTransfer){
         String sqlFrom = "UPDATE account SET balance = balance - ? WHERE account_id = ?;";
