@@ -4,6 +4,7 @@ import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.TransferDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -22,25 +23,21 @@ public class TransferController {
     private UserDao userDao;
     private AccountDao accountDao;
 
-    private Transfer transfer;
 
-    public TransferController (TransferDao transferDao, UserDao userDao, AccountDao accountDao, Transfer transfer) {
+
+    public TransferController (TransferDao transferDao, UserDao userDao, AccountDao accountDao) {
         this.transferDao = transferDao;
         this.userDao = userDao;
         this.accountDao = accountDao;
-        this.transfer = transfer;
+
     }
 
     @RequestMapping(value = "/transfer", method = RequestMethod.GET)
-    public List<Transfer> findTransfersByUserId(Principal principal) {
-        List<String> list = new ArrayList<>();
-        list.add();
-        List<Transfer> transfers = transferDao.getTransfersByUserId(userDao.findIdByUsername(principal.getName()));
-        for (int i = 0; i < transfers.size(); i++) {
-            transfers.indexOf(i)
-        }
-        list.add();
-        transferDao.getTransfersByUserId(userDao.findIdByUsername(principal.getName()));
+    public List<TransferDTO> findTransfersByUserId(Principal principal) {
+
+        List<TransferDTO> transfers = transferDao.getTransfersByUserId(userDao.findIdByUsername(principal.getName()), principal.getName(), accountDao.getAccountIdByUsername(principal.getName()));
+
+        return transfers;
 
     }
 

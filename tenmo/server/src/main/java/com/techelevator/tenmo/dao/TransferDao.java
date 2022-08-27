@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.TransferDTO;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface TransferDao {
 
     Transfer setStatusToApproved(Transfer pendingTransfer);
 
-    List<Transfer> getTransfersByUserId(int userId);
+    List<TransferDTO> getTransfersByUserId(int userId, String username, int accountId);
 
     List<Transfer> getTransferByTransferId(int transferId, int userId);
 

@@ -34,18 +34,18 @@ public class JdbcTransferDaoTests extends BaseDaoTests{
         sut = new JdbcTransferDao(dataSource);
     }
 
-    @Test
-    public void getTransferByUserId_returns_transfer() {
-        List<Transfer> transfers = sut.getTransfersByUserId(USER_1.getId());
-        assertTransferMatch(TRANSFER_1,transfers.get(0));
-    }
-
-    @Test
-    public void getTransferByUserId_returns_empty() {
-        List<Transfer> transfers = sut.getTransfersByUserId(9999);
-        List<Transfer> empty = new ArrayList<>();
-        Assert.assertEquals(empty, transfers);
-    }
+//    @Test
+//    public void getTransferByUserId_returns_transfer() {
+//        List<Transfer> transfers = sut.getTransfersByUserId(USER_1.getId());
+//        assertTransferMatch(TRANSFER_1,transfers.get(0));
+//    }
+//
+//    @Test
+//    public void getTransferByUserId_returns_empty() {
+//        List<Transfer> transfers = sut.getTransfersByUserId(9999);
+//        List<Transfer> empty = new ArrayList<>();
+//        Assert.assertEquals(empty, transfers);
+//    }
 
     @Test
     public void getTransferByTransferId_returns_transfer() {
